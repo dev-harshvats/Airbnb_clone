@@ -62,6 +62,12 @@ class InMemoryRefreshTokenStore:
                 count += 1
         return count
 
+    def purge_expired(self, before: datetime) -> int:
+        expired = [token_id for token_id, token in self.rows.items() if token.expires_at < before]
+        for token_id in expired:
+            del self.rows[token_id]
+        return len(expired)
+
 
 class InMemoryBookingRepository:
     def __init__(self) -> None:

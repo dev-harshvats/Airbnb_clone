@@ -15,6 +15,7 @@ from app.adapters.security.jwt_codec import JwtCodec
 from app.adapters.sql.uow import SqlUnitOfWork
 from app.adapters.storage.local_storage import LocalStorage
 from app.adapters.storage.pillow_processor import PillowImageProcessor
+from app.adapters.storage.s3_storage import S3Storage
 from app.core.config import Settings
 from app.core.database import DbSession
 from app.domain.entities import User
@@ -97,6 +98,9 @@ FeeRulesDep = Annotated[tuple[FeeRule, ...], Depends(get_fee_rules)]
 
 
 def get_storage(settings: SettingsDep) -> StorageBackend:
+    if settings.STORAGE_BACKEND == "s3":
+        assert settings.S3_BUCKET  # guaranteed by Settings validation
+        return S3Storage(settings.S3_BUCKET, settings.S3_REGION, settings.S3_PUBLIC_BASE_URL)
     return LocalStorage(settings.MEDIA_DIR)
 
 

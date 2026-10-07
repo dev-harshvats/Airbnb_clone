@@ -65,6 +65,9 @@ class RefreshTokenStore(Protocol):
     def revoke_family(self, family_id: str, when: datetime) -> int:
         """Revoke every still-live token of a family; return how many were revoked."""
 
+    def purge_expired(self, before: datetime) -> int:
+        """Delete tokens that expired before `before` (never usable again); return how many."""
+
 
 # ---------- listings ----------
 

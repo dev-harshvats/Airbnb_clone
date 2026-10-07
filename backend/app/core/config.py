@@ -3,6 +3,7 @@
 from datetime import timedelta
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from limits import parse_many
 from pydantic import field_validator, model_validator
@@ -18,6 +19,13 @@ class Settings(BaseSettings):
     ENV: str = "development"
     DATABASE_URL: str = "sqlite:///./data/airbnb.db"
     MEDIA_DIR: Path = Path("media")
+    # Where uploaded photos go: the local disk (development) or an S3 bucket (AWS). The bundled
+    # seed photos are always served from MEDIA_DIR.
+    STORAGE_BACKEND: Literal["local", "s3"] = "local"
+    S3_BUCKET: str | None = None
+    S3_REGION: str = "ap-south-1"
+    # Override only when the bucket sits behind a CDN or custom domain.
+    S3_PUBLIC_BASE_URL: str | None = None
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
     JWT_SECRET: str = DEFAULT_JWT_SECRET
@@ -56,6 +64,12 @@ class Settings(BaseSettings):
                 f"not a valid rate limit: {value!r} (expected e.g. '5/minute')"
             ) from exc
         return value
+
+    @model_validator(mode="after")
+    def _s3_needs_a_bucket(self) -> "Settings":
+        if self.STORAGE_BACKEND == "s3" and not self.S3_BUCKET:
+            raise ValueError("S3_BUCKET must be set when STORAGE_BACKEND=s3")
+        return self
 
     @model_validator(mode="after")
     def _require_real_secret_outside_development(self) -> "Settings":

@@ -20,6 +20,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Needed only when STORAGE_BACKEND=s3 (the AWS deployment)
+aws = ["boto3>=1.34"]
 dev = [
     "pytest>=8.2",
     "httpx>=0.27",

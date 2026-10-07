@@ -83,6 +83,8 @@ class AuthService:
             raise DomainError(
                 ErrorKind.UNAUTHENTICATED, "INVALID_CREDENTIALS", "Incorrect email or password."
             )
+        # Housekeeping: expired refresh tokens are dead weight, so the table doesn't grow forever.
+        self._uow.refresh_tokens.purge_expired(self._clock.now())
         session, _ = self._issue(user, client, family_id=uuid.uuid4().hex)
         self._uow.commit()
         log_event(logger, logging.INFO, "auth.login", user_id=user.id)

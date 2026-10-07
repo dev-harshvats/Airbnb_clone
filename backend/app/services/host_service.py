@@ -77,8 +77,12 @@ class HostService:
                 f"A listing can have at most {MAX_PHOTOS} photos.",
             )
         url, card_url = self._media.store_image(data)
-        photo = self._uow.listings.add_photo(listing_id, url, card_url)
-        self._uow.commit()
+        try:
+            photo = self._uow.listings.add_photo(listing_id, url, card_url)
+            self._uow.commit()
+        except Exception:
+            self._media.discard(url, card_url)  # the files exist but no row points at them
+            raise
         return photo
 
     def remove_photo(self, host: User, listing_id: int, photo_id: int) -> None:

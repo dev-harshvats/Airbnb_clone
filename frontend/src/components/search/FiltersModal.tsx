@@ -95,12 +95,16 @@ export function FiltersModal({ place, state, onApply, onClose }: Props) {
   const toggleIn = (list: string[], value: string) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
 
   useEffect(() => {
-    listingsApi.amenities().then(setAmenities).catch(() => setAmenities([]));
+    let current = true; // ignore answers that arrive after the dialog was closed
+    listingsApi.amenities().then((a) => current && setAmenities(a)).catch(() => current && setAmenities([]));
     // The histogram ignores the price filter on the server, so one fetch (for the search without price) is enough.
     listingsApi
       .priceHistogram(toListingQuery(state, place))
-      .then(setHistogram)
-      .catch(() => setHistogram(null));
+      .then((h) => current && setHistogram(h))
+      .catch(() => current && setHistogram(null));
+    return () => {
+      current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- loaded once, when the dialog opens
   }, []);
 

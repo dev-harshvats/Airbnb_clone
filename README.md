@@ -297,6 +297,17 @@ Base path `/api/v1`. Interactive docs are at http://localhost:8000/api/docs.
 | `/hosting`, `/hosting/listings/{id}/edit` | Host dashboard and listing editor |
 | `/experiences/{id}`, `/services/{id}` | Experience and service details |
 
+## Deploying to AWS
+
+`infra/terraform/main.tf` creates everything the backend needs on AWS: an EC2 instance (FastAPI behind nginx, with a fixed Elastic IP), an S3 bucket for uploaded photos, and the IAM role, security group and SSH key. From that folder:
+
+```bash
+terraform init
+terraform apply        # takes a few minutes; the server then installs and starts the API by itself
+```
+
+When it finishes, the `next_steps` output shows the API URL. Point the website at it by setting `API_ORIGIN` to that URL (for example in Vercel) and redeploying the website. Ship later backend versions by SSH-ing in and running `sudo airbnb-deploy`. Settings such as `region`, `instance_type` and `frontend_origin` are Terraform variables (see the top of `main.tf`). The backend selects S3 with `STORAGE_BACKEND=s3`; locally it keeps using the disk.
+
 ## Project structure
 
 ```

@@ -3,7 +3,7 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { SearchBar } from "@/components/layout/SearchBar";
 import { MobileSearchPill } from "@/components/layout/SearchPill";
@@ -96,7 +96,9 @@ function LandingHeader({ section }: { section: Section }) {
   const expanded = !scrolled || opened;
   const Current = TABS.find((t) => t.section === section)?.Icon ?? GlobeIcon;
 
-  useCloseOnScroll(opened, () => setOpened(false));
+  // Stable, so the scroll listener (and its starting position) isn't re-created on every render.
+  const closeOpened = useCallback(() => setOpened(false), []);
+  useCloseOnScroll(opened, closeOpened);
 
   return (
     <header

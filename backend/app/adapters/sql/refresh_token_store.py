@@ -1,7 +1,7 @@
 from dataclasses import asdict
 from datetime import datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from app.adapters.sql.models import RefreshTokenModel
@@ -51,5 +51,11 @@ class SqlRefreshTokenStore:
             update(RefreshTokenModel)
             .where(RefreshTokenModel.family_id == family_id, RefreshTokenModel.revoked_at.is_(None))
             .values(revoked_at=when)
+        )
+        return result.rowcount
+
+    def purge_expired(self, before: datetime) -> int:
+        result = self._session.execute(
+            delete(RefreshTokenModel).where(RefreshTokenModel.expires_at < before)
         )
         return result.rowcount

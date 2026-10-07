@@ -132,3 +132,14 @@ def test_revoke_family_only_touches_that_families_live_tokens(uow):
     assert uow.refresh_tokens.get_by_hash("a2").revoked_at == NOW
     assert uow.refresh_tokens.get_by_hash("b1").revoked_at is None
     assert uow.refresh_tokens.revoke_family("nope", NOW) == 0
+
+
+def test_purge_expired_removes_only_tokens_that_can_no_longer_be_used(uow):
+    user = uow.users.add(new_user())
+    uow.refresh_tokens.add(new_token(user.id, "old", expires_at=NOW - timedelta(days=1)))
+    uow.refresh_tokens.add(new_token(user.id, "live", expires_at=NOW + timedelta(days=1)))
+    uow.commit()
+
+    assert uow.refresh_tokens.purge_expired(NOW) == 1
+    assert uow.refresh_tokens.get_by_hash("old") is None
+    assert uow.refresh_tokens.get_by_hash("live") is not None

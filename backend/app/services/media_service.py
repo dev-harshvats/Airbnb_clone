@@ -20,7 +20,11 @@ class MediaService:
         processed = self._images.process(data)
         name = uuid.uuid4().hex
         url = self._storage.save(processed.full, f"{name}.webp")
-        card_url = self._storage.save(processed.card, f"{name}_card.webp")
+        try:
+            card_url = self._storage.save(processed.card, f"{name}_card.webp")
+        except Exception:
+            self._storage.delete(url)  # don't leave half an upload behind
+            raise
         return url, card_url
 
     def discard(self, *urls: str) -> None:

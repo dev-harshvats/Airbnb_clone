@@ -47,16 +47,19 @@ export function useInfiniteList<T>(key: string, fetchPage: (page: number) => Pro
         if (!entry.isIntersecting) return;
         const next = state.page + 1;
         setState((s) => ({ ...s, loading: true }));
+        // A page that arrives after the search changed belongs to the old search: drop it.
         fetchRef
           .current(next)
-          .then((result) => setState((s) => ({ ...s, items: [...s.items, ...result.items], total: result.total, page: next, loading: false })))
-          .catch(() => setState((s) => ({ ...s, loading: false, failed: true })));
+          .then((result) =>
+            setState((s) => (s.key !== key ? s : { ...s, items: [...s.items, ...result.items], total: result.total, page: next, loading: false })),
+          )
+          .catch(() => setState((s) => (s.key !== key ? s : { ...s, loading: false, failed: true })));
       },
       { rootMargin: "400px" },
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [sentinel, hasMore, state.loading, state.page]);
+  }, [sentinel, hasMore, state.loading, state.page, key]);
 
   return {
     items,

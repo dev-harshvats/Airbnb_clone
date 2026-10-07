@@ -33,3 +33,10 @@ next-env.d.ts
 .idea/
 .DS_Store
 Thumbs.db
+
+# Terraform: state holds secrets (the login-token key, the SSH private key) and must never be committed
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.pem
