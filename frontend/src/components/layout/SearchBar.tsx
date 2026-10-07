@@ -88,16 +88,16 @@ export function SearchBar({ section = "all", initialWhere = "", initial = NO_SEA
   const hasGuests = guests.adults + guests.children + guests.infants + guests.pets > 0;
 
   const segment =
-    "flex h-full min-w-0 flex-col justify-center rounded-full text-left hover:bg-hover focus-within:bg-white focus-within:shadow-card";
-  const open = "bg-white shadow-card";
+    "seg flex h-full min-w-0 flex-col justify-center rounded-full text-left transition-[background-color,box-shadow] duration-200 ease-airbnb hover:bg-hover focus-within:bg-white focus-within:shadow-card";
+  const open = "is-active bg-white shadow-card";
   const label = "text-xs font-semibold";
-  const popover = "absolute top-[74px] z-40 animate-pop rounded-[32px] bg-white p-6 shadow-modal";
+  const popover = "absolute top-[74px] z-40 animate-drop-in rounded-[32px] bg-white p-6 shadow-modal";
 
   return (
     <form
       ref={root}
       onSubmit={submit}
-      className="relative mx-auto flex h-[66px] w-full max-w-[850px] items-center rounded-full border border-line bg-white shadow-pill"
+      className={`search-bar relative mx-auto flex h-[66px] w-full max-w-[850px] items-center rounded-full border border-line shadow-pill transition-colors duration-200 ease-airbnb ${panel ? "is-open bg-hover" : "bg-white"}`}
     >
       <label className={`${segment} flex-[1.3] cursor-text px-6 ${panel === "where" ? open : ""}`}>
         <span className={label}>Where</span>
@@ -110,7 +110,7 @@ export function SearchBar({ section = "all", initialWhere = "", initial = NO_SEA
           className="bg-transparent text-sm outline-none placeholder:text-muted"
         />
       </label>
-      <span className="h-8 w-px bg-line" />
+      <span className="seg-divider h-8 w-px bg-line" />
       <button
         type="button"
         className={`${segment} flex-1 px-6 ${panel === "when" ? open : ""}`}
@@ -121,11 +121,11 @@ export function SearchBar({ section = "all", initialWhere = "", initial = NO_SEA
           {hasDates ? formatRange(dates.checkIn!, dates.checkOut!) : "Add dates"}
         </span>
       </button>
-      <span className="h-8 w-px bg-line" />
+      <span className="seg-divider h-8 w-px bg-line" />
       {/* The last segment holds the text button and, at its right end, the round search button
           (48px, inset 10px from the bar's edge like airbnb.co.in). */}
       <div
-        className={`flex h-full min-w-0 flex-1 items-center rounded-full pr-[9px] hover:bg-hover focus-within:bg-white focus-within:shadow-card ${panel === "who" || panel === "service" ? open : ""}`}
+        className={`seg flex h-full min-w-0 flex-1 items-center rounded-full pr-[9px] transition-[background-color,box-shadow] duration-200 ease-airbnb hover:bg-hover focus-within:bg-white focus-within:shadow-card ${panel === "who" || panel === "service" ? open : ""}`}
       >
         <button
           type="button"
@@ -140,9 +140,15 @@ export function SearchBar({ section = "all", initialWhere = "", initial = NO_SEA
         <button
           type="submit"
           aria-label="Search"
-          className="grid size-12 shrink-0 place-items-center rounded-full bg-rausch text-white transition hover:bg-rausch-dark"
+          className="flex h-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-rausch px-[15px] text-white transition-colors duration-200 hover:bg-rausch-dark active:scale-95"
         >
-          <Search size={18} strokeWidth={3} />
+          <Search size={18} strokeWidth={3} className="shrink-0" />
+          {/* "Search" slides out while a panel is open, as on airbnb.co.in */}
+          <span
+            className={`overflow-hidden whitespace-nowrap text-base font-semibold transition-[max-width,opacity,margin] duration-300 ease-airbnb ${panel ? "ml-2 max-w-[80px] opacity-100" : "ml-0 max-w-0 opacity-0"}`}
+          >
+            Search
+          </span>
         </button>
       </div>
 

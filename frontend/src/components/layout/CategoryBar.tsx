@@ -82,15 +82,14 @@ export function CategoryBar({ place = null }: { place?: string | null }) {
   return (
     <div className="sticky top-[73px] z-20 border-b border-line-soft bg-white md:top-20">
       <div className="relative mx-auto max-w-[1760px] px-4 md:px-6 xl:px-20">
-        {edges.left && (
-          <button
-            aria-label="Scroll categories left"
-            onClick={() => scrollBy(-1)}
-            className="absolute left-2 top-1/2 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-pill hover:scale-105 md:grid xl:left-16"
-          >
-            <ChevronLeft size={14} />
-          </button>
-        )}
+        <button
+          aria-label="Scroll categories left"
+          onClick={() => scrollBy(-1)}
+          tabIndex={edges.left ? 0 : -1}
+          className={`absolute left-2 top-1/2 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-pill transition-[opacity,transform] duration-200 ease-airbnb hover:scale-105 md:grid xl:left-16 ${edges.left ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        >
+          <ChevronLeft size={14} />
+        </button>
         <div ref={scroller} onScroll={measure} className="no-scrollbar flex gap-8 overflow-x-auto pt-3">
           {categories === null
             ? Array.from({ length: 12 }, (_, i) => (
@@ -107,24 +106,23 @@ export function CategoryBar({ place = null }: { place?: string | null }) {
                     key={category.id}
                     onClick={() => choose(category.slug)}
                     aria-pressed={isActive}
-                    className={`group flex shrink-0 flex-col items-center gap-2 border-b-2 pb-3 text-xs font-semibold transition
+                    className={`group flex shrink-0 flex-col items-center gap-2 border-b-2 pb-3 text-xs font-semibold transition-[color,border-color] duration-200 ease-airbnb
                       ${isActive ? "border-ink text-ink" : "border-transparent text-muted hover:border-line hover:text-ink"}`}
                   >
-                    <Icon size={24} strokeWidth={isActive ? 2 : 1.5} />
+                    <Icon size={24} strokeWidth={isActive ? 2 : 1.5} className="transition-transform duration-200 ease-airbnb group-hover:-translate-y-0.5" />
                     <span className="whitespace-nowrap">{category.label}</span>
                   </button>
                 );
               })}
         </div>
-        {edges.right && (
-          <button
-            aria-label="Scroll categories right"
-            onClick={() => scrollBy(1)}
-            className="absolute right-2 top-1/2 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-pill hover:scale-105 md:grid xl:right-16"
-          >
-            <ChevronRight size={14} />
-          </button>
-        )}
+        <button
+          aria-label="Scroll categories right"
+          onClick={() => scrollBy(1)}
+          tabIndex={edges.right ? 0 : -1}
+          className={`absolute right-2 top-1/2 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-pill transition-[opacity,transform] duration-200 ease-airbnb hover:scale-105 md:grid xl:right-16 ${edges.right ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        >
+          <ChevronRight size={14} />
+        </button>
       </div>
     </div>
   );

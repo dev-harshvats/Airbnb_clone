@@ -1,4 +1,6 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+"use client";
+
+import { forwardRef, type ButtonHTMLAttributes, type MouseEvent } from "react";
 
 type Variant = "primary" | "dark" | "secondary" | "ghost" | "link";
 type Size = "sm" | "md" | "lg";
@@ -27,14 +29,22 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 /** Forwards every native button prop and ref, so it can replace a plain <button> anywhere. */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "primary", size = "md", loading, fullWidth, className = "", disabled, children, ...rest },
+  { variant = "primary", size = "md", loading, fullWidth, className = "", disabled, children, onMouseMove, ...rest },
   ref,
 ) {
+  // The red button has a soft highlight that follows the pointer (drawn by .btn-spotlight in globals.css).
+  const follow = (event: MouseEvent<HTMLButtonElement>) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - box.top}px`);
+    onMouseMove?.(event);
+  };
   return (
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-control font-semibold transition
+      onMouseMove={variant === "primary" ? follow : onMouseMove}
+      className={`${variant === "primary" ? "btn-spotlight" : ""} inline-flex items-center justify-center gap-2 rounded-control font-semibold transition duration-200
         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink
         disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]}
         ${fullWidth ? "w-full" : ""} ${className}`}

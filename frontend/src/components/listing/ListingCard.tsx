@@ -36,20 +36,24 @@ function PhotoArea({ listing, carousel }: { listing: Listing; carousel: boolean 
   const go = (step: number) => (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    setIndex((i) => (i + step + photos.length) % photos.length);
+    setIndex((i) => Math.min(photos.length - 1, Math.max(0, i + step)));
   };
+  const arrow =
+    "absolute top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink opacity-0 shadow-pill transition-[opacity,transform] duration-200 ease-airbnb hover:scale-105 hover:bg-white focus-visible:opacity-100 group-hover:opacity-100 disabled:hidden";
 
   return (
     <div className="group relative aspect-square overflow-hidden rounded-[14px] bg-surface">
-      {photos.length > 0 && (
-        // eslint-disable-next-line @next/next/no-img-element -- already resized WebP renditions
-        <img
-          src={photos[carousel ? index : 0].card_url}
-          alt={listing.title}
-          loading="lazy"
-          className="size-full object-cover transition-transform duration-300"
-        />
-      )}
+      {/* The photos sit side by side and the strip slides; only the neighbours of the current one are loaded. */}
+      <div className="flex size-full transition-transform duration-300 ease-airbnb" style={{ transform: `translateX(-${index * 100}%)` }}>
+        {photos.map((photo, i) => (
+          <div key={photo.url} className="size-full shrink-0">
+            {(carousel ? Math.abs(i - index) <= 1 : i === 0) && (
+              // eslint-disable-next-line @next/next/no-img-element -- already resized WebP renditions
+              <img src={photo.card_url} alt={listing.title} loading="lazy" className="size-full object-cover" />
+            )}
+          </div>
+        ))}
+      </div>
       {listing.is_guest_favourite && (
         <span className="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-[13px] font-semibold shadow-pill">
           Guest favourite
@@ -59,25 +63,17 @@ function PhotoArea({ listing, carousel }: { listing: Listing; carousel: boolean 
 
       {carousel && photos.length > 1 && (
         <>
-          <button
-            onClick={go(-1)}
-            aria-label="Previous photo"
-            className="absolute left-2 top-1/2 hidden size-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-pill transition hover:scale-105 hover:bg-white group-hover:grid"
-          >
+          <button onClick={go(-1)} disabled={index === 0} aria-label="Previous photo" className={`${arrow} left-2`}>
             <ChevronLeft size={16} />
           </button>
-          <button
-            onClick={go(1)}
-            aria-label="Next photo"
-            className="absolute right-2 top-1/2 hidden size-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-pill transition hover:scale-105 hover:bg-white group-hover:grid"
-          >
+          <button onClick={go(1)} disabled={index === photos.length - 1} aria-label="Next photo" className={`${arrow} right-2`}>
             <ChevronRight size={16} />
           </button>
           <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1">
             {photos.map((photo, i) => (
               <span
                 key={photo.url}
-                className={`size-1.5 rounded-full ${i === index ? "bg-white" : "bg-white/60"}`}
+                className={`size-1.5 rounded-full transition-[background-color,transform] duration-300 ease-airbnb ${i === index ? "scale-110 bg-white" : "scale-90 bg-white/60"}`}
               />
             ))}
           </div>

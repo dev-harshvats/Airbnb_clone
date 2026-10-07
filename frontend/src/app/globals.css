@@ -16,8 +16,8 @@
   --color-chip: #f2f2f2;
   --color-hover: #ebebeb;
 
-  /* Airbnb's own typeface is proprietary: use it if installed, else the bundled lookalike (Figtree). */
-  --font-sans: "Airbnb Cereal VF", Circular, var(--font-figtree), -apple-system, BlinkMacSystemFont,
+  /* Airbnb Cereal (bundled in public/fonts), with the usual system fallbacks while it loads. */
+  --font-sans: var(--font-cereal), "Airbnb Cereal VF", Circular, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
   --radius-card: 12px;
@@ -89,16 +89,34 @@ body {
   font-family: var(--font-sans);
 }
 
-/* ---- motion ---- */
+/* ---- motion ----
+ * Airbnb's own easing curve is a fast start with a long, soft landing: cubic-bezier(0.2, 0, 0, 1).
+ * Everything that moves uses it, so the whole site feels like one piece. */
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slide-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pop { from { transform: scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+/* dropdowns and panels: drop in from slightly above while fading in */
+@keyframes drop-in { from { opacity: 0; transform: translateY(-14px); } 80% { opacity: 1; } to { opacity: 1; transform: none; } }
+/* the active-tab underline grows out from its middle */
+@keyframes underline-grow { from { transform: scaleX(0.05); } to { transform: scaleX(1); } }
+/* a heart that was just saved: a quick overshoot */
+@keyframes heart-pop { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 70% { transform: scale(0.92); } 100% { transform: scale(1); } }
+/* badges and small icons popping in */
+@keyframes badge-pop { from { transform: scale(0) rotate(15deg); } to { transform: scale(1) rotate(0); } }
 
 @theme {
-  --animate-fade-in: fade-in 150ms ease-out;
-  --animate-slide-up: slide-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-pop: pop 180ms ease-out;
+  --ease-airbnb: cubic-bezier(0.2, 0, 0, 1);
+  /* every plain `transition` utility in the app now uses Airbnb's curve */
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  --default-transition-duration: 200ms;
+  --animate-fade-in: fade-in 150ms var(--ease-airbnb);
+  --animate-slide-up: slide-up 300ms var(--ease-airbnb);
+  --animate-pop: pop 200ms var(--ease-airbnb);
+  --animate-drop-in: drop-in 250ms var(--ease-airbnb);
+  --animate-underline: underline-grow 300ms var(--ease-airbnb) both;
+  --animate-heart: heart-pop 350ms var(--ease-airbnb);
+  --animate-badge: badge-pop 300ms var(--ease-airbnb) both;
   --animate-shimmer: shimmer 1.4s linear infinite;
 }
 
@@ -106,6 +124,77 @@ body {
   background-image: linear-gradient(90deg, #f0f0f0 0%, #f9f9f9 50%, #f0f0f0 100%);
   background-size: 800px 100%;
 }
+:root[data-theme="dark"] .animate-shimmer {
+  background-image: linear-gradient(90deg, #232323 0%, #2c2c2c 50%, #232323 100%);
+}
+
+/* ---- header tab icons: each one has its own little move, on hover and when its tab is the active one ---- */
+@keyframes globe-spin { from { transform: perspective(160px) rotateY(0deg); } to { transform: perspective(160px) rotateY(360deg); } }
+@keyframes globe-spin-b { from { transform: perspective(160px) rotateY(0deg); } to { transform: perspective(160px) rotateY(360deg); } }
+@keyframes house-hop { 0%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-4px) rotate(-3deg); } 60% { transform: translateY(0) rotate(2deg); } 80% { transform: translateY(-1px) rotate(0); } }
+@keyframes house-hop-b { 0%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-4px) rotate(-3deg); } 60% { transform: translateY(0) rotate(2deg); } 80% { transform: translateY(-1px) rotate(0); } }
+@keyframes door-open { 0%, 100% { transform: scaleX(1); } 40%, 70% { transform: scaleX(0.25); } }
+@keyframes door-open-b { 0%, 100% { transform: scaleX(1); } 40%, 70% { transform: scaleX(0.25); } }
+@keyframes balloon-float { 0%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-5px) rotate(5deg); } 70% { transform: translateY(-2px) rotate(-4deg); } }
+@keyframes balloon-float-b { 0%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-5px) rotate(5deg); } 70% { transform: translateY(-2px) rotate(-4deg); } }
+@keyframes bell-ring { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 35% { transform: rotate(-12deg); } 55% { transform: rotate(8deg); } 75% { transform: rotate(-5deg); } }
+@keyframes bell-ring-b { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 35% { transform: rotate(-12deg); } 55% { transform: rotate(8deg); } 75% { transform: rotate(-5deg); } }
+
+.tab-icon { transform-box: fill-box; transform-origin: center; }
+.tab-icon-globe { transform-origin: center; }
+.tab-icon-house { transform-origin: 50% 100%; }
+.tab-icon-door { transform-box: fill-box; transform-origin: 0% 50%; }
+.tab-icon-balloon { transform-origin: 50% 100%; }
+.tab-icon-bell { transform-origin: 50% 90%; }
+/* The "-b" copies exist so hovering the active tab replays the move (a changed animation name restarts it). */
+.tab-link[aria-current="page"] .tab-icon-globe { animation: globe-spin 1.1s var(--ease-airbnb) 1; }
+.tab-link:hover .tab-icon-globe { animation: globe-spin-b 1.1s var(--ease-airbnb) 1; }
+.tab-link[aria-current="page"] .tab-icon-house { animation: house-hop 0.8s var(--ease-airbnb) 1; }
+.tab-link:hover .tab-icon-house { animation: house-hop-b 0.8s var(--ease-airbnb) 1; }
+.tab-link[aria-current="page"] .tab-icon-door { animation: door-open 0.9s var(--ease-airbnb) 1; }
+.tab-link:hover .tab-icon-door { animation: door-open-b 0.9s var(--ease-airbnb) 1; }
+.tab-link[aria-current="page"] .tab-icon-balloon { animation: balloon-float 1.4s ease-in-out 1; }
+.tab-link:hover .tab-icon-balloon { animation: balloon-float-b 1.4s ease-in-out 1; }
+.tab-link[aria-current="page"] .tab-icon-bell { animation: bell-ring 0.9s ease-in-out 1; }
+.tab-link:hover .tab-icon-bell { animation: bell-ring-b 0.9s ease-in-out 1; }
+
+/* ---- search bar: the divider next to a hovered or open segment fades away, like Airbnb's ---- */
+.seg-divider { transition: opacity 200ms var(--ease-airbnb); }
+.seg:hover + .seg-divider,
+.seg-divider:has(+ .seg:hover),
+.seg.is-active + .seg-divider,
+.seg-divider:has(+ .seg.is-active) { opacity: 0; }
+.search-bar.is-open .seg-divider { opacity: 0; }
+
+/* ---- header: the tall header (tabs + big search bar) folds into one compact bar as you scroll ----
+ * data-expanded="true"  tabs visible, big bar open, pill hidden
+ * data-expanded="false" tabs slid up, big bar folded away, pill in the middle
+ * Measured from airbnb.co.in: about 400ms, long ease-out, tabs travel ~80px, the bar travels ~88px up. */
+html { overflow-anchor: none; }
+.hdr { transition: background-color 300ms var(--ease-airbnb), border-color 300ms var(--ease-airbnb), box-shadow 300ms var(--ease-airbnb); }
+.hdr-tabs, .hdr-pill { transition: transform 400ms var(--ease-airbnb), opacity 300ms var(--ease-airbnb); }
+.hdr[data-expanded="false"] .hdr-tabs { transform: translateY(-60px); opacity: 0; pointer-events: none; }
+.hdr[data-expanded="true"] .hdr-pill { transform: translateY(88px) scale(2.2, 1.45); opacity: 0; pointer-events: none; }
+.reveal { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 400ms var(--ease-airbnb); }
+.reveal.is-open { grid-template-rows: 1fr; }
+/* clipped while moving; visible once open, so the search bar's dropdowns are not cut off */
+.reveal > .reveal-inner { min-height: 0; overflow: hidden; transition: overflow 0s allow-discrete; }
+.reveal.is-open > .reveal-inner { overflow: visible; transition: overflow 0s 400ms allow-discrete; }
+.bar-morph { transform-origin: 50% 0; transition: transform 400ms var(--ease-airbnb), opacity 300ms var(--ease-airbnb); }
+.reveal:not(.is-open) .bar-morph { transform: translateY(-88px) scale(0.44, 0.72); opacity: 0; pointer-events: none; }
+
+/* ---- primary buttons: a soft highlight follows the pointer (set in components/ui/Button) ---- */
+.btn-spotlight { position: relative; overflow: hidden; isolation: isolate; }
+.btn-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 250ms var(--ease-airbnb);
+  background: radial-gradient(circle 90px at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.28), transparent 70%);
+}
+.btn-spotlight:hover::before { opacity: 1; }
 
 /* Horizontal scroll areas (the category bar) hide their scrollbar like Airbnb does. */
 .no-scrollbar { scrollbar-width: none; }

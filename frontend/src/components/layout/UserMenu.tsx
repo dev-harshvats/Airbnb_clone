@@ -11,7 +11,7 @@ import { setTheme, useTheme } from "@/lib/theme";
 import { useAuth } from "@/store/auth";
 import { useUi } from "@/store/ui";
 
-const item = "flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-surface";
+const item = "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors duration-150 hover:bg-surface";
 
 function Line({ icon, children, onClick, bold }: { icon?: ReactNode; children: ReactNode; onClick: () => void; bold?: boolean }) {
   return (
@@ -68,11 +68,11 @@ export function AccountControls() {
     openAuth();
   };
   const authed = status === "authed" && user;
-  const circle = "grid size-10 place-items-center rounded-full bg-chip text-ink transition hover:bg-hover";
+  const circle = "grid size-10 place-items-center rounded-full bg-chip text-ink transition-[background-color,box-shadow,transform] duration-200 ease-airbnb hover:bg-hover hover:shadow-pill active:scale-95";
 
   return (
     <div ref={root} className="relative flex items-center gap-1">
-      <Link href="/host/homes" className="hidden rounded-full px-4 py-3 text-sm font-medium hover:bg-hover lg:block">
+      <Link href="/host/homes" className="hidden rounded-full px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-hover lg:block">
         Become a host
       </Link>
       <button onClick={() => setOpen((v) => !v)} aria-label="Account" className={circle}>
@@ -87,7 +87,7 @@ export function AccountControls() {
       </button>
 
       {open && (
-        <div role="menu" className="absolute right-0 top-12 z-50 w-[260px] animate-pop overflow-hidden rounded-[16px] bg-white py-2 text-ink shadow-modal">
+        <div role="menu" className="absolute right-0 top-12 z-50 w-[260px] origin-top-right animate-pop overflow-hidden rounded-[16px] bg-white py-2 text-ink shadow-modal">
           {authed ? (
             <>
               <Line bold onClick={go("/coming-soon/messages")}>Messages</Line>

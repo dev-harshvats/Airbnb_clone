@@ -334,7 +334,7 @@ frontend/
 5. **No email.** No verification or reset emails are sent; accounts are active immediately and "Forgot password" is a placeholder.
 6. **Experiences and services are browse-only.** They have listing pages but no reservations, and their ratings are stored values.
 7. **Map pins** show the stays loaded so far in the list. The API supports a `bbox` filter for "search as I move the map", which the UI doesn't use yet.
-8. **Typography.** Airbnb's own font is proprietary, so the app uses the free Figtree lookalike.
+8. **Typography.** The app uses Airbnb Cereal (six weights in `frontend/public/fonts`), supplied by the project owner. It is Airbnb's proprietary typeface, so it is included for this learning project only; check its licence before reusing or redistributing the repository.
 9. **Reviews dialog** pages through reviews but has no search box.
 
 ## Photo credits
