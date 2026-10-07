@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/*
+ * Airbnb design tokens (SRS §3). Tailwind v4 reads them from @theme, which
+ * generates utilities such as bg-rausch, text-ink, border-line, shadow-card, rounded-card.
+ */
+@theme {
+  --color-rausch: #ff385c;
+  --color-rausch-dark: #e00b41;
+  --color-ink: #222222;
+  --color-muted: #6a6a6a;
+  --color-line: #dddddd;
+  --color-line-soft: #ebebeb;
+  --color-surface: #f7f7f7;
+  --color-canvas: #ffffff;
+
+  --font-sans: "Airbnb Cereal VF", Circular, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", sans-serif;
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 8px 28px rgba(0, 0, 0, 0.28);
+
+  /* Airbnb's layout breakpoints (grid columns change at each one). */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 550px;
+  --breakpoint-md: 744px;
+  --breakpoint-lg: 950px;
+  --breakpoint-xl: 1128px;
+  --breakpoint-2xl: 1440px;
+  --breakpoint-3xl: 1640px;
+}
+
+:root {
+  --gradient-rausch: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+}
+
+@utility bg-rausch-gradient {
+  background-image: var(--gradient-rausch);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
