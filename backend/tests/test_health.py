@@ -46,11 +46,11 @@ def test_access_log_is_json_with_request_id(client, caplog):
 
 def test_default_jwt_secret_rejected_outside_development():
     with pytest.raises(ValueError, match="JWT_SECRET"):
-        Settings(ENV="production")
+        Settings(_env_file=None, ENV="production")
 
 
 def test_default_jwt_secret_allowed_in_development():
-    assert Settings(ENV="development").JWT_SECRET
+    assert Settings(_env_file=None, ENV="development").JWT_SECRET
 
 
 def _client_with_route(settings, handler):
@@ -105,3 +105,16 @@ def test_sqlite_pragmas_enabled(client):
         assert conn.execute(text("PRAGMA journal_mode")).scalar() == "wal"
         assert conn.execute(text("PRAGMA foreign_keys")).scalar() == 1
         assert conn.execute(text("PRAGMA busy_timeout")).scalar() == 5000
+
+
+@pytest.mark.parametrize("bad", ["", "lots", "5/fortnight", "five/minute"])
+def test_invalid_rate_limit_fails_at_startup(bad):
+    with pytest.raises(ValueError, match="rate limit"):
+        Settings(_env_file=None, ENV="test", AUTH_RATE_LIMIT=bad)
+
+
+def test_valid_rate_limits_are_accepted():
+    settings = Settings(
+        _env_file=None, ENV="test", AUTH_RATE_LIMIT="10/hour", LOOKUP_RATE_LIMIT="3/second"
+    )
+    assert settings.AUTH_RATE_LIMIT == "10/hour"

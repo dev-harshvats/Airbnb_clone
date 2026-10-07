@@ -5,6 +5,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.domain.errors import DomainError, ErrorKind
+
+_KIND_STATUS = {
+    ErrorKind.BAD_REQUEST: 400,
+    ErrorKind.UNPROCESSABLE: 422,
+    ErrorKind.UNAUTHENTICATED: 401,
+    ErrorKind.FORBIDDEN: 403,
+    ErrorKind.NOT_FOUND: 404,
+    ErrorKind.CONFLICT: 409,
+}
+
 _HTTP_CODES = {
     400: "BAD_REQUEST",
     401: "UNAUTHORIZED",
@@ -40,6 +51,10 @@ async def _handle_app_error(_: Request, exc: AppError) -> JSONResponse:
     return error_response(exc.status, exc.code, exc.detail)
 
 
+async def _handle_domain_error(_: Request, exc: DomainError) -> JSONResponse:
+    return error_response(_KIND_STATUS[exc.kind], exc.code, exc.detail)
+
+
 async def _handle_http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:
     code = _HTTP_CODES.get(exc.status_code, "HTTP_ERROR")
     return error_response(exc.status_code, code, str(exc.detail))
@@ -51,5 +66,6 @@ async def _handle_validation_error(_: Request, exc: RequestValidationError) -> J
 
 def register_error_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, _handle_app_error)
+    app.add_exception_handler(DomainError, _handle_domain_error)
     app.add_exception_handler(StarletteHTTPException, _handle_http_error)
     app.add_exception_handler(RequestValidationError, _handle_validation_error)

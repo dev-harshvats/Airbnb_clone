@@ -1,7 +1,6 @@
 from fastapi import APIRouter
-from sqlalchemy import text
 
-from app.core.database import DbSession
+from app.core.database import DbSession, database_is_up
 from app.core.errors import AppError
 
 router = APIRouter(tags=["health"])
@@ -16,8 +15,6 @@ def health() -> dict[str, str]:
 @router.get("/ready")
 def ready(db: DbSession) -> dict[str, str]:
     """Readiness: the database answers."""
-    try:
-        db.execute(text("SELECT 1"))
-    except Exception as exc:
-        raise AppError(503, "NOT_READY", "Database unavailable") from exc
+    if not database_is_up(db):
+        raise AppError(503, "NOT_READY", "Database unavailable")
     return {"status": "ready", "database": "ok"}

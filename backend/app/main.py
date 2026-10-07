@@ -11,6 +11,7 @@ from app.core.config import Settings, get_settings
 from app.core.database import build_engine, build_session_factory
 from app.core.errors import register_error_handlers
 from app.core.logging import RequestContextMiddleware, configure_logging
+from app.core.rate_limit import register_rate_limiting
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -44,6 +45,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)
+    register_rate_limiting(app, settings)
 
     app.include_router(api_router)
     settings.MEDIA_DIR.mkdir(parents=True, exist_ok=True)

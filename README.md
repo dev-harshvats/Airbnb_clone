@@ -31,6 +31,9 @@ On the first run it creates the virtualenv, installs the backend and frontend de
 - App: http://localhost:3000
 - API docs: http://localhost:8000/api/docs
 
+On first start it also seeds demo data: 58 listings across 20 Indian destinations, bookings, reviews and
+wishlists. Log in with `guest@example.com` or `host@example.com` (password `Password123`).
+
 Press `Ctrl+C` to stop both servers. Use `--skip-install` to skip the dependency check. Override the ports with `BACKEND_PORT` / `FRONTEND_PORT`.
 
 ## Local setup (manual)
@@ -43,7 +46,7 @@ python -m venv .venv
 .venv/Scripts/activate        # Windows; use `source .venv/bin/activate` on macOS/Linux
 pip install -e ".[dev]"
 cp .env.example .env
-uvicorn app.main:create_app --factory --reload --no-access-log
+uvicorn app.main:create_app --factory --reload --no-access-log --no-proxy-headers
 ```
 
 API docs: http://localhost:8000/api/docs · Health: http://localhost:8000/api/v1/health

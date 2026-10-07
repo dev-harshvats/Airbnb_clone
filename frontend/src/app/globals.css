@@ -14,8 +14,9 @@
   --color-surface: #f7f7f7;
   --color-canvas: #ffffff;
 
-  --font-sans: "Airbnb Cereal VF", Circular, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", sans-serif;
+  /* Airbnb's own typeface is proprietary: use it if installed, else the bundled lookalike (Figtree). */
+  --font-sans: "Airbnb Cereal VF", Circular, var(--font-figtree), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
   --radius-card: 12px;
   --radius-control: 8px;
@@ -51,4 +52,30 @@ body {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* ---- motion ---- */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pop { from { transform: scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+
+@theme {
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-slide-up: slide-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-pop: pop 180ms ease-out;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(90deg, #f0f0f0 0%, #f9f9f9 50%, #f0f0f0 100%);
+  background-size: 800px 100%;
+}
+
+/* Horizontal scroll areas (the category bar) hide their scrollbar like Airbnb does. */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

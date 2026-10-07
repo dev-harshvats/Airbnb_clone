@@ -8,8 +8,6 @@ import type { NextConfig } from "next";
 const API_ORIGIN = process.env.API_ORIGIN ?? "http://localhost:8000";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     // Pin the project root so stray lockfiles in parent folders are never picked up.
     root: path.join(__dirname),

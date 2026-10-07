@@ -14,6 +14,7 @@ dependencies = [
     "pyjwt>=2.8",
     "bcrypt>=4.1",
     "slowapi>=0.1.9",
+    "limits>=3.0",
     "pillow>=10.3",
     "python-multipart>=0.0.9",
 ]
@@ -48,6 +49,12 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "N"]
 
+[tool.ruff.lint.per-file-ignores]
+# Alembic renders long SQL strings and constraint names; wrapping them would hurt readability.
+"alembic/versions/*" = ["E501"]
+# Demo copy (descriptions, reviews, bios) is prose; wrapping it would hurt readability.
+"app/seed/*" = ["E501"]
+
 # --- Architecture contracts (SOLID / ports & adapters, SYSTEM_DESIGN §3.3) ---
 [tool.importlinter]
 root_package = "app"
@@ -72,4 +79,11 @@ name = "Ports are abstractions only"
 type = "forbidden"
 source_modules = ["app.ports"]
 forbidden_modules = ["app.adapters", "app.services", "app.api", "sqlalchemy", "fastapi"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "API talks to services and the container, never to adapters directly"
+type = "forbidden"
+source_modules = ["app.api"]
+forbidden_modules = ["app.adapters", "sqlalchemy"]
 allow_indirect_imports = true

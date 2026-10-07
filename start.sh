@@ -139,7 +139,7 @@ prefix() {
 
 info "Starting backend on http://localhost:$BACKEND_PORT"
 (cd "$BACKEND" && "$VENV_BIN/python" -m uvicorn app.main:create_app --factory --reload \
-  --no-access-log --host 127.0.0.1 --port "$BACKEND_PORT" 2>&1 | prefix api "1;34") &
+  --no-access-log --no-proxy-headers --host 127.0.0.1 --port "$BACKEND_PORT" 2>&1 | prefix api "1;34") &
 PIDS+=($!)
 
 info "Starting frontend on http://localhost:$FRONTEND_PORT"
