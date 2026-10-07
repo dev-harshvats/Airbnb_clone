@@ -1,12 +1,13 @@
 "use client";
 
-import { CircleHelp, Globe, Menu, UserRound } from "lucide-react";
+import { CircleHelp, Globe, Menu, Moon, Sun, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { toast } from "@/components/ui/Toast";
+import { setTheme, useTheme } from "@/lib/theme";
 import { useAuth } from "@/store/auth";
 import { useUi } from "@/store/ui";
 
@@ -44,6 +45,7 @@ export function AccountControls() {
   const router = useRouter();
   const { user, status, logout } = useAuth();
   const openAuth = useUi((s) => s.openAuth);
+  const theme = useTheme();
 
   useEffect(() => {
     if (!open) return;
@@ -66,11 +68,11 @@ export function AccountControls() {
     openAuth();
   };
   const authed = status === "authed" && user;
-  const circle = "grid size-10 place-items-center rounded-full bg-[#f2f2f2] text-ink transition hover:bg-[#e8e8e8]";
+  const circle = "grid size-10 place-items-center rounded-full bg-chip text-ink transition hover:bg-hover";
 
   return (
     <div ref={root} className="relative flex items-center gap-1">
-      <Link href="/host/homes" className="hidden rounded-full px-4 py-3 text-sm font-medium hover:bg-[#ebebeb] lg:block">
+      <Link href="/host/homes" className="hidden rounded-full px-4 py-3 text-sm font-medium hover:bg-hover lg:block">
         Become a host
       </Link>
       <button onClick={() => setOpen((v) => !v)} aria-label="Account" className={circle}>
@@ -101,6 +103,12 @@ export function AccountControls() {
               <hr className="my-2 border-line-soft" />
               <Line icon={<Globe size={16} />} onClick={go("/coming-soon/language")}>Languages &amp; currency</Line>
               <Line icon={<CircleHelp size={16} />} onClick={go("/help/home")}>Help Centre</Line>
+              <Line
+                icon={theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? "Light mode" : "Dark mode"}
+              </Line>
               <hr className="my-2 border-line-soft" />
               <Line
                 onClick={async () => {
@@ -117,6 +125,12 @@ export function AccountControls() {
             <>
               <Line icon={<Globe size={16} />} onClick={go("/coming-soon/language")}>Languages &amp; currency</Line>
               <Line icon={<CircleHelp size={16} />} onClick={go("/help/home")}>Help Centre</Line>
+              <Line
+                icon={theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? "Light mode" : "Dark mode"}
+              </Line>
               <hr className="my-2 border-line-soft" />
               <HostCard onClick={go("/host/homes")} />
               <Line onClick={go("/refer")}>Refer a host</Line>

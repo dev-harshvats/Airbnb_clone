@@ -60,7 +60,7 @@ export function ServicesHome() {
           <div className="no-scrollbar flex gap-4 overflow-x-auto">
             {groups.map(({ type }) => (
               <Link key={type.key} href={searchPath("services", null, { service_type: type.key })} className="w-[126px] shrink-0">
-                <div className="grid aspect-square place-items-center rounded-[20px] bg-surface transition hover:bg-[#ebebeb]">
+                <div className="grid aspect-square place-items-center rounded-[20px] bg-surface transition hover:bg-hover">
                   <ServiceIcon type={type.key} className="size-16" />
                 </div>
                 <p className="mt-2 text-sm font-semibold">{type.label}</p>

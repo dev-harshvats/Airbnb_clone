@@ -5,6 +5,7 @@ import { Providers } from "@/components/auth/Providers";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { THEME_INIT_SCRIPT } from "@/lib/themeScript";
 import "./globals.css";
 
 // A free lookalike for Airbnb's proprietary typeface (SIL Open Font License).
@@ -27,7 +28,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-IN" className={figtree.variable}>
+    <html lang="en-IN" className={figtree.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-screen antialiased">
         <Header />
         {children}

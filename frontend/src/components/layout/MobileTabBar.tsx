@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { BeloIcon } from "@/components/ui/Logo";
+import { hidesChrome } from "@/lib/routes";
 import { useAuth } from "@/store/auth";
 import { useUi } from "@/store/ui";
 
@@ -14,6 +15,8 @@ export function MobileTabBar() {
   const { status } = useAuth();
   const openAuth = useUi((s) => s.openAuth);
   const authed = status === "authed";
+  // Detail and checkout pages have their own sticky bottom bar.
+  if (/^\/(rooms|book)\//.test(pathname) || hidesChrome(pathname)) return null;
 
   const tab = (active: boolean) =>
     `flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium ${active ? "text-rausch" : "text-muted"}`;

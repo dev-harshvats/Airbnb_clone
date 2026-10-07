@@ -13,9 +13,12 @@ export const placeToSlug = (place: string) => place.trim().replace(/\s+/g, "-");
 export const slugToPlace = (slug: string) => decodeURIComponent(slug).split("--")[0].replace(/-/g, " ").trim();
 
 /** The search-results page for a kind of stay, optionally for one place. */
-export function searchPath(kind: Kind, place?: string | null, query?: Record<string, string | undefined>): string {
+export function searchPath(kind: Kind, place?: string | null, query?: Record<string, string | undefined> | URLSearchParams): string {
   const base = place ? `/s/${encodeURIComponent(placeToSlug(place))}/${kind}` : `/s/${kind}`;
-  const params = new URLSearchParams(Object.entries(query ?? {}).filter((e): e is [string, string] => !!e[1]));
+  const params =
+    query instanceof URLSearchParams
+      ? query
+      : new URLSearchParams(Object.entries(query ?? {}).filter((e): e is [string, string] => !!e[1]));
   return params.size ? `${base}?${params}` : base;
 }
 
@@ -41,3 +44,6 @@ export function placeFromPath(pathname: string): string | null {
 
 /** Only the four landing pages show the tall header with the big search bar. */
 export const isLanding = (pathname: string) => ["/", "/homes", "/experiences", "/services"].includes(pathname);
+
+/** The host wizard has its own header and footer, so the site-wide ones step aside. */
+export const hidesChrome = (pathname: string) => pathname.startsWith("/become-a-host");

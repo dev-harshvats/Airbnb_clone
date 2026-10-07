@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/client";
-import type { Destination, ListingCard, Page } from "@/types/api";
+import type { BookedRange } from "@/lib/availability";
+import type { Amenity, Destination, ListingCard, ListingDetail, Page, PriceHistogram, Quote, Review } from "@/types/api";
 
 /** The filters GET /listings understands (all optional). */
 export type ListingQuery = {
@@ -27,5 +28,13 @@ export type ListingQuery = {
 
 export const listingsApi = {
   search: (query: ListingQuery) => api<Page<ListingCard>>("/listings", { query }),
+  priceHistogram: (query: ListingQuery) => api<PriceHistogram>("/listings/price-histogram", { query }),
+  amenities: () => api<Amenity[]>("/amenities"),
+  detail: (id: number | string) => api<ListingDetail>(`/listings/${id}`),
+  availability: (id: number | string) => api<{ booked: BookedRange[] }>(`/listings/${id}/availability`).then((r) => r.booked),
+  quote: (id: number | string, checkIn: string, checkOut: string) =>
+    api<Quote>(`/listings/${id}/quote`, { method: "POST", body: { check_in: checkIn, check_out: checkOut } }),
+  reviews: (id: number | string, page: number, pageSize = 6) =>
+    api<Page<Review>>(`/listings/${id}/reviews`, { query: { page, page_size: pageSize } }),
   destinations: () => api<Destination[]>("/destinations"),
 };

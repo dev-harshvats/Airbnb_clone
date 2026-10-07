@@ -11,7 +11,8 @@ import { BalloonIcon, BellIcon, GlobeIcon, HouseIcon } from "@/components/layout
 import { AccountControls } from "@/components/layout/UserMenu";
 import { Logo } from "@/components/ui/Logo";
 import { formatRange } from "@/lib/format";
-import { isLanding, placeFromPath, sectionOf, type Section } from "@/lib/routes";
+import { hidesChrome, isLanding, placeFromPath, sectionOf, type Section } from "@/lib/routes";
+import { parseSearch } from "@/lib/searchState";
 
 const TABS: { section: Section; label: string; href: string; Icon: typeof GlobeIcon }[] = [
   { section: "all", label: "All", href: "/", Icon: GlobeIcon },
@@ -33,6 +34,7 @@ const SECTION_NOUN: Record<Section, string> = {
  */
 export function Header() {
   const pathname = usePathname();
+  if (hidesChrome(pathname)) return null;
   return (
     <>
       <div className="md:hidden">
@@ -68,7 +70,7 @@ function LandingHeader({ section }: { section: Section }) {
                 key={tab}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm transition hover:bg-[#ebebeb] ${active ? "font-semibold text-ink" : "text-muted"}`}
+                className={`relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm transition hover:bg-hover ${active ? "font-semibold text-ink" : "text-muted"}`}
               >
                 <Icon className={`size-9 transition ${active ? "" : "opacity-60 grayscale"}`} />
                 {label}
@@ -144,7 +146,7 @@ function CompactHeader({ section }: { section: Section }) {
       </div>
       {open && (
         <div className="animate-fade-in border-t border-line-soft bg-surface px-6 pb-6 pt-5">
-          <SearchBar section={section} initialWhere={location ?? ""} onDone={() => setOpen(false)} />
+          <SearchBar section={section} initialWhere={location ?? ""} initial={parseSearch(params)} onDone={() => setOpen(false)} />
         </div>
       )}
     </header>

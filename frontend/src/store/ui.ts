@@ -8,6 +8,10 @@ type UiState = {
   onAuthCancel: (() => void) | null;
   openAuth: (options?: { redirectTo?: string; onCancel?: () => void }) => void;
   closeAuth: (reason?: "success" | "dismiss") => void;
+  /** The listing whose "Save to wishlist" dialog is open, if any. */
+  saveListingId: number | null;
+  openSave: (listingId: number) => void;
+  closeSave: () => void;
   searchExpanded: boolean;
   setSearchExpanded: (open: boolean) => void;
 };
@@ -27,6 +31,9 @@ export const useUi = create<UiState>((set, get) => ({
     set({ authModalOpen: false, onAuthCancel: null });
     if (reason === "dismiss") onAuthCancel?.();
   },
+  saveListingId: null,
+  openSave: (listingId) => set({ saveListingId: listingId }),
+  closeSave: () => set({ saveListingId: null }),
   searchExpanded: false,
   setSearchExpanded: (open) => set({ searchExpanded: open }),
 }));

@@ -2,9 +2,10 @@
 
 import { Globe } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { placeToSlug } from "@/lib/routes";
+import { hidesChrome, placeToSlug } from "@/lib/routes";
 
 /** The footer's "Inspiration for future getaways" tabs: [place, what it is known for]. */
 const INSPIRATION: Record<string, [place: string, note: string][]> = {
@@ -66,6 +67,8 @@ const COLUMNS: { title: string; links: [label: string, href: string][] }[] = [
 export function Footer() {
   const tabs = Object.keys(INSPIRATION);
   const [tab, setTab] = useState(tabs[0]);
+  const pathname = usePathname();
+  if (hidesChrome(pathname)) return null;
 
   return (
     <footer className="mt-12 border-t border-line bg-surface pb-24 text-sm md:pb-0">

@@ -17,6 +17,12 @@ function parts(isoDate: string) {
   };
 }
 
+/** "12 Oct 2026" */
+export function formatDate(isoDate: string): string {
+  const d = parts(isoDate);
+  return `${d.day} ${d.month} ${d.year}`;
+}
+
 /** "12–17 Oct", "28 Oct – 2 Nov", or with years when the stay crosses a year boundary. */
 export function formatRange(checkIn: string, checkOut: string): string {
   const a = parts(checkIn);

@@ -13,6 +13,8 @@
   --color-line-soft: #ebebeb;
   --color-surface: #f7f7f7;
   --color-canvas: #ffffff;
+  --color-chip: #f2f2f2;
+  --color-hover: #ebebeb;
 
   /* Airbnb's own typeface is proprietary: use it if installed, else the bundled lookalike (Figtree). */
   --font-sans: "Airbnb Cereal VF", Circular, var(--font-figtree), -apple-system, BlinkMacSystemFont,
@@ -37,6 +39,39 @@
 
 :root {
   --gradient-rausch: linear-gradient(to right, #e61e4d 0%, #e31c5f 50%, #d70466 100%);
+}
+
+/*
+ * Dark theme: the same tokens, redefined. Utilities read var(--color-*), so flipping the variables
+ * flips every component; `white` follows the canvas so bg-white surfaces darken with it.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink: #f2f2f2;
+  --color-muted: #a3a3a3;
+  --color-line: #3d3d3d;
+  --color-line-soft: #2c2c2c;
+  --color-surface: #1d1d1d;
+  --color-canvas: #121212;
+  --color-chip: #2a2a2a;
+  --color-hover: #333333;
+  --color-white: #121212;
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.6);
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 8px 28px rgba(0, 0, 0, 0.7);
+}
+/* Text on the red brand buttons stays white in both themes. */
+:root[data-theme="dark"] .bg-rausch,
+:root[data-theme="dark"] .bg-rausch-gradient {
+  color: #fff;
+}
+:root[data-theme="dark"] .rdp-root {
+  --rdp-accent-color: #f2f2f2;
+  --rdp-accent-background-color: #2a2a2a;
+  --rdp-range_start-date-background-color: #f2f2f2;
+  --rdp-range_end-date-background-color: #f2f2f2;
+  --rdp-range_start-color: #121212;
+  --rdp-range_end-color: #121212;
 }
 
 @utility bg-rausch-gradient {
@@ -78,4 +113,84 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* react-day-picker, themed to Airbnb's black-on-white range calendar */
+.rdp-root {
+  --rdp-accent-color: #222222;
+  --rdp-accent-background-color: #f2f2f2;
+  --rdp-range_start-date-background-color: #222222;
+  --rdp-range_end-date-background-color: #222222;
+  --rdp-today-color: #222222;
+  --rdp-months-gap: 2.5rem;
+  font-size: 0.875rem;
+}
+.rdp-month_caption {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Two range inputs stacked into one dual-handle slider: only the thumbs take pointer events */
+.dual-range {
+  pointer-events: none;
+  appearance: none;
+  background: transparent;
+}
+.dual-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid #b0b0b0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: grab;
+}
+.dual-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid #b0b0b0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: grab;
+}
+.dual-range::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.dual-range::-moz-range-track {
+  background: transparent;
+}
+
+/* Leaflet price pins */
+.price-pin {
+  background: none;
+  border: none;
+}
+.price-pin > span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  border-radius: 9999px;
+  background: #fff;
+  color: #222;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.12s;
+}
+.price-pin > span:hover,
+.price-pin.is-active > span {
+  background: #222;
+  color: #fff;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.price-pin.is-seen > span {
+  background: #f2f2f2;
+}
+.leaflet-container {
+  font-family: inherit;
 }

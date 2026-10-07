@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { AuthModal } from "@/components/auth/AuthModal";
 import { Toaster } from "@/components/ui/Toast";
+import { SaveToWishlistModal } from "@/components/wishlist/SaveToWishlistModal";
 import { useAuth } from "@/store/auth";
 import { useWishlist } from "@/store/wishlist";
 
@@ -23,6 +24,7 @@ export function Providers() {
   return (
     <>
       <AuthModal />
+      <SaveToWishlistModal />
       <Toaster />
     </>
   );
